@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Monitor de Vibraciones - ESP32</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #f2f2f2;
+  text-align: center;
+}
+
+.card {
+  background: white;
+  width: 300px;
+  margin: auto;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #ccc;
+}
+
+.alarma {
+  color: red;
+  font-weight: bold;
+}
+
+.normal {
+  color: green;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Monitor de Vibraciones</h2>
+
+<div class="card">
+  <p>AX: <span id="ax">0</span></p>
+  <p>AY: <span id="ay">0</span></p>
+  <p>AZ: <span id="az">0</span></p>
+  <p>Vibración: <span id="vib">0</span> m/s²</p>
+  <p>Estado: <span id="estado" class="normal">NORMAL</span></p>
+</div>
+
+<script>
+const ESP32_IP = "http://192.168.100.149"; // 🔴 CAMBIA ESTA IP
+
+setInterval(() => {
+  fetch(ESP32_IP + "/data")
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById("ax").innerText = data.ax;
+      document.getElementById("ay").innerText = data.ay;
+      document.getElementById("az").innerText = data.az;
+      document.getElementById("vib").innerText = data.vib;
+
+      const estado = document.getElementById("estado");
+      estado.innerText = data.estado;
+
+      if (data.estado === "ALARMA") {
+        estado.className = "alarma";
+      } else {
+        estado.className = "normal";
+      }
+    })
+    .catch(err => console.log("Error:", err));
+}, 1000);
+</script>
+
+</body>
+</html>
